@@ -14,22 +14,20 @@ app.use(helmet());
 app.use(cors());
 app.use(express.json());
 
-amqp.connect("amqp://localhost", (error, connection) => {
+// connect to Rabbit MQ
+amqp.connect("amqp://localhost:5672", (error, connection) => {
     if (error) throw new Error("connect");
 
     connection.createChannel((error2, channel) => {
         if (error2) throw new Error("createChannel");
 
-        const queue = "temperatures";
-        channel.assertQueue(queue, {
+        channel.assertQueue(envv.queueName, {
             durable: false
         });
 
-        channel.sendToQueue(queue, Buffer.from("Test"));
+        channel.sendToQueue(envv.queueName || "queue", Buffer.from("Test"));
         console.log("Sent");
     });
-
-
 });
 
 app.get("/", (req, res) => {
