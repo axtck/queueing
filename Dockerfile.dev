@@ -7,14 +7,17 @@ WORKDIR /usr/src/app
 # copy package.json & package.lock.json
 COPY package*.json ./
 
-# install dependencies
-RUN npm install
-
 # bundle src
 COPY . .
+
+# install typescript compiler 
+RUN npm install tsc
+
+# compile and build
+RUN npm run build
 
 # map port 
 EXPOSE 5000
 
 # start server ($ node server.js)
-CMD ["node", "src/index.js"]
+CMD ["node", "dist/server.js"]
